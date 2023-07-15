@@ -18,11 +18,11 @@ if not os.path.isfile(file_password):
     exit()
 
 # Baca file wordlist username
-with open(file_username, "r") as file:
+with open(file_username, "r", encoding="latin1") as file:
     daftar_username = file.read().splitlines()
 
 # Baca file wordlist password
-with open(file_password, "r") as file:
+with open(file_password, "r", encoding="latin1") as file:
     daftar_password = file.read().splitlines()
 
 # Coba setiap kombinasi username dan password
