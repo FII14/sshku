@@ -1,20 +1,32 @@
 import socket
 
-host = input("Masukkan alamat host: ")
-port = 22
+def scan_ports(host, start_port, end_port):
+    open_ports = []
+    for port in range(start_port, end_port + 1):
+        try:
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+                sock.settimeout(1)
+                result = sock.connect_ex((host, port))
+                if result == 0:
+                    open_ports.append(port)
+        except socket.error:
+            pass
+    
+    return open_ports
 
-try:
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.settimeout(1)
-    result = sock.connect_ex((host, port))
-    if result == 0:
-        print(f"Port {port} (SSH) terbuka pada {host}")
+if __name__ == "__main__":
+    host = input("Masukkan alamat host yang ingin dipindai: ")
+
+    # Batas awal dan akhir port yang ingin dipindai (contoh: 1 hingga 65535)
+    start_port = 1
+    end_port = 65535
+
+    open_ports = scan_ports(host, start_port, end_port)
+
+    if open_ports:
+        print(f"Port terbuka pada {host}:")
+        for port in open_ports:
+            print(f"- {port}")
     else:
-        print(f"Port {port} (SSH) tertutup pada {host}")
-    sock.close()
-
-except socket.error:
-    print(f"Terjadi kesalahan saat mencoba terhubung ke {host} pada port {port}")
-
-except socket.gaierror:
-    print("Alamat host tidak valid atau tidak dapat dijangkau")
+        print(f"Tidak ada port terbuka pada {host}")
+        
