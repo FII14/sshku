@@ -1,15 +1,20 @@
+import csv
 import os
-import pandas as pd
 
 def load_attendance_data(filename):
+    data = []
     if os.path.exists(filename):
-        df = pd.read_csv(filename)
-        return df
-    else:
-        return pd.DataFrame(columns=["Nama", "Kehadiran"])
+        with open(filename, 'r') as file:
+            reader = csv.reader(file)
+            next(reader)  # Skip the header row
+            data = [row for row in reader]
+    return data
 
-def save_attendance_data(df, filename):
-    df.to_csv(filename, index=False)
+def save_attendance_data(data, filename):
+    with open(filename, 'w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(["Nama", "Kehadiran"])
+        writer.writerows(data)
 
 def main():
     filename = "absensi_kelas.csv"
@@ -25,11 +30,10 @@ def main():
             print("Status kehadiran tidak valid. Masukkan 'hadir' atau 'tidak hadir'.")
             continue
 
-        attendance_data = attendance_data.append({"Nama": nama, "Kehadiran": kehadiran}, ignore_index=True)
+        attendance_data.append([nama, kehadiran])
 
     save_attendance_data(attendance_data, filename)
     print("Data absensi telah disimpan.")
 
 if __name__ == "__main__":
     main()
-    
