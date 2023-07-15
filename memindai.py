@@ -1,32 +1,35 @@
-import socket
+import os
+import pandas as pd
 
-def scan_ports(host, start_port, end_port):
-    open_ports = []
-    for port in range(start_port, end_port + 1):
-        try:
-            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
-                sock.settimeout(1)
-                result = sock.connect_ex((host, port))
-                if result == 0:
-                    open_ports.append(port)
-        except socket.error:
-            pass
-    
-    return open_ports
+def load_attendance_data(filename):
+    if os.path.exists(filename):
+        df = pd.read_csv(filename)
+        return df
+    else:
+        return pd.DataFrame(columns=["Nama", "Kehadiran"])
+
+def save_attendance_data(df, filename):
+    df.to_csv(filename, index=False)
+
+def main():
+    filename = "absensi_kelas.csv"
+    attendance_data = load_attendance_data(filename)
+
+    while True:
+        nama = input("Masukkan nama siswa (atau 'selesai' untuk keluar): ")
+        if nama.lower() == 'selesai':
+            break
+
+        kehadiran = input("Masukkan status kehadiran ('hadir' atau 'tidak hadir'): ")
+        if kehadiran.lower() not in ['hadir', 'tidak hadir']:
+            print("Status kehadiran tidak valid. Masukkan 'hadir' atau 'tidak hadir'.")
+            continue
+
+        attendance_data = attendance_data.append({"Nama": nama, "Kehadiran": kehadiran}, ignore_index=True)
+
+    save_attendance_data(attendance_data, filename)
+    print("Data absensi telah disimpan.")
 
 if __name__ == "__main__":
-    host = input("Masukkan alamat host yang ingin dipindai: ")
-
-    # Batas awal dan akhir port yang ingin dipindai (contoh: 1 hingga 65535)
-    start_port = 1
-    end_port = 65535
-
-    open_ports = scan_ports(host, start_port, end_port)
-
-    if open_ports:
-        print(f"Port terbuka pada {host}:")
-        for port in open_ports:
-            print(f"- {port}")
-    else:
-        print(f"Tidak ada port terbuka pada {host}")
-        
+    main()
+    
